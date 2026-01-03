@@ -1,18 +1,18 @@
 // ==UserScript==
 // @name         DmailTemplates
 // @namespace    https://github.com/nonamethanks/danbooru-userscripts
-// @version      0.1.0
+// @version      0.2.0
 // @description  Provide pre-written DMail templates.
 // @source       https://github.com/nonamethanks/danbooru-userscripts
 // @author       nonamethanks
 // @match        *://*.donmai.us/dmails/new
 // @exclude      /^https?://\w+\.donmai\.us/.*\.(xml|json|atom)(\?|$)/
 // @run-at       document-idle
-// @downloadURL
-// @updateURL
+// @downloadURL  https://raw.githubusercontent.com/nonamethanks/danbooru-userscripts/master/dmail_templates.user.js
+// @updateURL    https://raw.githubusercontent.com/nonamethanks/danbooru-userscripts/master/dmail_templates.user.js
 // ==/UserScript==
 
-const DMAIL_OPTIONS = [
+const DMAIL_TEMPLATES = [
     {
         name: "Incorrect ratings",
         title: "About your ratings",
@@ -160,7 +160,7 @@ function draw_modal() {
 
     modalContent.innerHTML += "<h3>Example posts:</h3><input id='dmail-template-example-posts' placeholder='Post IDs, space-separated'></input>"
 
-    DMAIL_OPTIONS.forEach((option, _index) => {
+    DMAIL_TEMPLATES.forEach((option, _index) => {
         const button = document.createElement("button");
         button.textContent = option.name;
         button.style.display = "block";
