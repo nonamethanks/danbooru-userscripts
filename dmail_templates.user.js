@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DmailTemplates
 // @namespace    https://github.com/nonamethanks/danbooru-userscripts
-// @version      0.2.1
+// @version      0.2.2
 // @description  Provide pre-written DMail templates.
 // @source       https://github.com/nonamethanks/danbooru-userscripts
 // @author       nonamethanks
@@ -68,7 +68,7 @@ const DMAIL_TEMPLATES = [
         message: `
         Several of your uploads appear to be [[duplicate]]s of existing posts.
 
-        Please be more mindful in the future, and familiarize yourself with the information in the [[duplicate]] wiki page. The upload page will tell you if there's other posts with high similarity to your pending upload that have already been submitted to the site, so you should be more careful to verify whether your uploads are [[revision]]s or higher quality versions, or just redundant [[duplicates]].
+        Please be more mindful in the future, and familiarize yourself with the information in the [[duplicate]] wiki page. The upload page will tell you if there's other posts with high similarity to your pending upload that have already been submitted to the site, so you should be more careful to verify whether your uploads are [[revision]]s or higher quality versions, or just redundant [[duplicate]]s.
         If you are not sure, you can ask in the "official discord":https://discord.gg/danbooru.
         `
     },
@@ -114,7 +114,7 @@ const DMAIL_TEMPLATES = [
         name: "Bad translations",
         title: "About your translations",
         message: `
-        Several of you translations appear not to meet our quality standards.
+        Several of your translations appear not to meet our quality standards.
 
         Please familiarize yourself with [[howto:translate]]. You should not translate posts unless you are reasonably familiar with both the original language and English.
         `
