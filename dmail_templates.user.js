@@ -5,7 +5,7 @@
 // @description  Provide pre-written DMail templates.
 // @source       https://github.com/nonamethanks/danbooru-userscripts
 // @author       nonamethanks
-// @match        *://*.donmai.us/dmails/new
+// @match        *://*.donmai.us/dmails/new*
 // @exclude      /^https?://\w+\.donmai\.us/.*\.(xml|json|atom)(\?|$)/
 // @run-at       document-idle
 // @downloadURL  https://raw.githubusercontent.com/nonamethanks/danbooru-userscripts/master/dmail_templates.user.js
