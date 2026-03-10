@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DmailTemplates
 // @namespace    https://github.com/nonamethanks/danbooru-userscripts
-// @version      0.2.2
+// @version      0.2.3
 // @description  Provide pre-written DMail templates.
 // @source       https://github.com/nonamethanks/danbooru-userscripts
 // @author       nonamethanks
@@ -128,6 +128,16 @@ const DMAIL_TEMPLATES = [
         Please familiarize yourself with [[howto:translate]]. You should not translate posts unless you are reasonably familiar with both the original language and English.
         `
     },
+    {
+        name: "Bad flags",
+        title: "About your flags",
+        message: `
+        Several of your flags have been rejected for being invalid.
+
+        Please familiarize yourself with [[howto:flag]] before you flag again. You should only flag posts that break our [[help:upload rules]] or don't meet our quality standards.
+        A post having objectionable content or not being tagged properly is not a valid reason for a flag. Instead, blacklist the tag you don't like, or properly tag the post yourself.
+        `
+    },
 ]
 
 function draw_button() {
@@ -182,10 +192,13 @@ function fill_dmail(title, message) {
     if (examplePosts) {
         const postList = examplePosts
             .split(/\s+/)
-            .map(post => `* post #${post} `)
-            .join("\n");
+            .map(post => `* post #${post} `);
 
-        message += `\n\nHere's an example: \n${postList}`; // Append the list to the message
+        if (postList.length > 1) {
+            message += `\n\nHere's a few examples: \n${postList.join("\n")}`;
+        } else {
+            message += `\n\nHere's an example: \n${postList}`;
+        }
     }
 
     console.log("Updating dmail body.")
