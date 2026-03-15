@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Random BUR button
 // @namespace    https://github.com/nonamethanks/danbooru-userscripts
-// @version      1.0.0
+// @version      1.0.1
 // @description  Provide an admin panel to get random pending BURs to approve or reject
 // @source       https://github.com/nonamethanks/danbooru-userscripts
 // @author       nonamethanks
@@ -134,7 +134,7 @@ function update_today_done () {
         "search[status]": "approved",
         "search[updated_at]": `>${yesterday.toISOString()}`,
         "only": "id,updated_at",
-        "limit": 100
+        "limit": 1000
     }
 
     fetch_danbooru_data(url, params)
