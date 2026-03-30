@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DmailTemplates
 // @namespace    https://github.com/nonamethanks/danbooru-userscripts
-// @version      0.2.3
+// @version      0.2.4
 // @description  Provide pre-written DMail templates.
 // @source       https://github.com/nonamethanks/danbooru-userscripts
 // @author       nonamethanks
@@ -26,7 +26,7 @@ const DMAIL_TEMPLATES = [
         name: "Not enough tags",
         title: "About your tagging",
         message: `
-        Many of your uploads do not have a sufficient amount of tags.
+        Many of your uploads do not have a sufficient amount of tags. %USER_POST_SEARCH%gentags:<15%
 
         Tagging your uploads is mandatory on Danbooru, and every post you upload should ideally have at least 20 tags (though exceptions may apply, such as [[scenery]] or [[no humans]] posts).
         Please familiarize yourself with [[howto:tag]] and [[howto:tag_checklist]]. If you are not sure how to tag a post, you can ask in topic #12251 or in the "official discord":https://discord.gg/danbooru.
@@ -36,7 +36,9 @@ const DMAIL_TEMPLATES = [
         name: "Blatant mistagging",
         title: "About your tagging",
         message: `
-        Several of your posts have completely wrong tags. Please tag what you actually see in the image, don't tag canonically or spam related tags on uploads.
+        Several of your posts have completely wrong tags.
+
+        Please tag what you actually see in the image, don't tag canonically or spam related tags on uploads.
         This kind of behavior will result in a ban if you continue.
         `
     },
@@ -45,7 +47,10 @@ const DMAIL_TEMPLATES = [
         title: "About your sources",
         message:
         `
-        Several of your posts are missing valid sources. Please familiarize yourself with [[help:image source]].
+        Several of your posts are missing valid sources. %USER_POST_SEARCH%-source:http*%
+
+        Please familiarize yourself with [[help:image source]], and fix your old uploads with the correct sources where possible.
+        If you accidentally uploaded samples, then consider posting in topic #16765 so that they can be replaced with the full size.
 
         Sourcing is mandatory on Danbooru, and it's a fundamental part of our archival process. Ideally, every post should have a source.
 
@@ -56,7 +61,9 @@ const DMAIL_TEMPLATES = [
         name: "AI uploads",
         title: "About your uploads",
         message: `
-        Several of your uploads appear to be blatantly [[ai-generated]]. Please keep in mind that [[ai-generated]] content withot any human input is forbidden on Danbooru, and those posts will be deleted (if they haven't been already).
+        Several of your uploads appear to be blatantly [[ai-generated]]. %USER_POST_SEARCH%ai-generated%
+
+        Please keep in mind that [[ai-generated]] content withot any human input is forbidden on Danbooru, and those posts will be deleted (if they haven't been already).
         [[ai-assisted]] content is allowed in certain cases, but it will be subjected to much higher scrutiny.
 
         If you are not sure whether an artist account is using AI, you can ask for opinions in topic #22285 or in the "official discord":https://discord.gg/danbooru.
@@ -66,9 +73,10 @@ const DMAIL_TEMPLATES = [
         name: "Duplicate uploads",
         title: "About your uploads",
         message: `
-        Several of your uploads appear to be [[duplicate]]s of existing posts.
+        Several of your uploads appear to be [[duplicate]]s of existing posts. %USER_POST_SEARCH%duplicate%
 
-        Please be more mindful in the future, and familiarize yourself with the information in the [[duplicate]] wiki page. The upload page will tell you if there's other posts with high similarity to your pending upload that have already been submitted to the site, so you should be more careful to verify whether your uploads are [[revision]]s or higher quality versions, or just redundant [[duplicate]]s.
+        Please be more mindful in the future, and familiarize yourself with the information in the [[duplicate]] wiki page.
+         The upload page will tell you if there's other posts with high similarity to your pending upload that have already been submitted to the site, so you should be more careful to verify whether your uploads are [[revision]]s or higher quality versions, or just redundant [[duplicate]]s.
         If you are not sure, you can ask in the "official discord":https://discord.gg/danbooru.
         `
     },
@@ -76,7 +84,7 @@ const DMAIL_TEMPLATES = [
         name: "Off-topic uploads",
         title: "About your uploads",
         message: `
-        Several of your uploads are [[off-topic]] to Danbooru.
+        Several of your uploads are [[off-topic]] to Danbooru. %USER_POST_SEARCH%off-topic%
 
         Danbooru is a site dedicated primarly to anime-style or anime-related artwork. While this is a broad category, your uploads are in no way related to it.
         Please familiarize yourself with the [[help:upload rules|Upload Rules]] before you continue, otherwise your behavior may result in a ban.
@@ -184,9 +192,17 @@ function draw_modal() {
 }
 
 function fill_dmail(title, message) {
+    $('.dtext-editor-body').css({ height: "300px" });
     $("#dmail_title").val(title)
 
     message = message.replace(/\n +/g, "\n").replace(/^\s+/, "").replace(/\s+$/, "");
+
+    const dmail_recipient = $("#dmail_to_name").val()
+    if (dmail_recipient.trim().length > 0) {
+        message = message.replace(/%USER_POST_SEARCH%(.*?)%/, `See: {{user:${dmail_recipient} $1}}.`)
+    } else {
+        message = message.replace(/%USER_POST_SEARCH%(.*?)%/,  "")
+    }
 
     const examplePosts = $("#dmail-template-example-posts").val().trim();
     if (examplePosts) {
