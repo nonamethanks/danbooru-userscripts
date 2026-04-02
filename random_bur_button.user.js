@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Random BUR button
 // @namespace    https://github.com/nonamethanks/danbooru-userscripts
-// @version      1.0.1
+// @version      1.0.2
 // @description  Provide an admin panel to get random pending BURs to approve or reject
 // @source       https://github.com/nonamethanks/danbooru-userscripts
 // @author       nonamethanks
@@ -75,7 +75,7 @@ function open_random_bur () {
         "search[status]": "pending",
         "only": "id,forum_post_id",
         "search[created_at]": `<${threedaysago.toISOString()}`,
-        "limit": 1000
+        "limit": 1000,
     }
 
     let max_to_remember = 100
@@ -84,21 +84,20 @@ function open_random_bur () {
         .then(data => {
             let last_opened = get_last_opened()
 
-            console.log("Fetched active BUR data. Picking random url...")
-            let randomBur = data[Math.floor(Math.random() * data.length)]
-            while (true) {
-                randomBur = randomBur.forum_post_id
-                if (last_opened.includes(randomBur)) {
-                    console.log(`${randomBur} was opened recently. Picking another one...`)
-                    randomBur = data[Math.floor(Math.random() * data.length)]
-                } else {
-                    console.log(`Opening ${randomBur}.`)
-                    last_opened = last_opened.slice(0, max_to_remember)
-                    last_opened.unshift(randomBur)
-                    localStorage.setItem("burStats.lastopened", JSON.stringify(last_opened))
-                    break
+            let not_seen_before = data.filter(bur => {
+                if (!last_opened.includes(bur.forum_post_id)) {
+                    return true;
                 }
-            }
+            })
+
+            let randomBur = not_seen_before[Math.floor(Math.random() * not_seen_before.length)].forum_post_id
+
+            console.log(`Opening BUR #${randomBur}.`)
+
+            last_opened.unshift(randomBur)
+            last_opened = last_opened.slice(0, max_to_remember)
+            localStorage.setItem("burStats.lastopened", JSON.stringify(last_opened))
+
             window.open(`https://danbooru.donmai.us/forum_posts/${randomBur}`)
         })
 }
