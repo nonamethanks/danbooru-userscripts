@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Random BUR button
 // @namespace    https://github.com/nonamethanks/danbooru-userscripts
-// @version      1.0.2
+// @version      1.0.3
 // @description  Provide an admin panel to get random pending BURs to approve or reject
 // @source       https://github.com/nonamethanks/danbooru-userscripts
 // @author       nonamethanks
@@ -89,6 +89,17 @@ function open_random_bur () {
                     return true;
                 }
             })
+
+            if (!not_seen_before.length) {
+                console.log("Saw all BURs. Forgetting half the old ones so we can show more...")
+                last_opened = last_opened.slice(0, max_to_remember / 2)
+
+                not_seen_before = data.filter(bur => {
+                    if (!last_opened.includes(bur.forum_post_id)) {
+                        return true;
+                    }
+                })
+            }
 
             let randomBur = not_seen_before[Math.floor(Math.random() * not_seen_before.length)].forum_post_id
 
