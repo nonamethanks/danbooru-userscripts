@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DmailTemplates
 // @namespace    https://github.com/nonamethanks/danbooru-userscripts
-// @version      0.2.4
+// @version      0.3.0
 // @description  Provide pre-written DMail templates.
 // @source       https://github.com/nonamethanks/danbooru-userscripts
 // @author       nonamethanks
@@ -12,7 +12,7 @@
 // @updateURL    https://raw.githubusercontent.com/nonamethanks/danbooru-userscripts/master/dmail_templates.user.js
 // ==/UserScript==
 
-const DMAIL_TEMPLATES = [
+const DMAIL_TEMPLATES_POSTS = [
     {
         name: "Incorrect ratings",
         title: "About your ratings",
@@ -100,11 +100,23 @@ const DMAIL_TEMPLATES = [
         While what exactly constitutes "high quality" is debatable, your posts are well below the threshold. Please look at {{status:active approver:any}} if you are not sure what that means, and compare it to your uploads.
         `
     },
+]
+const DMAIL_TEMPLATES_COMMENTS = [
     {
         name: "Low quality comments",
         title: "About your comments",
         message: `
         Many of your comments are low quality or irrelevant to the posts you're leaving them on.
+
+        Spamming comments, deleting them to avoid downvotes, or posting low quality content like erotic roleplay should be avoided.
+        Please read [[help:community_rules]] before you leave further comments.
+        `
+    },
+    {
+        name: "Spamming the same comment",
+        title: "About your comments",
+        message: `
+        Please stop posting the same comment over and over again.
 
         Spamming comments, deleting them to avoid downvotes, or posting low quality content like erotic roleplay should be avoided.
         Please read [[help:community_rules]] before you leave further comments.
@@ -118,6 +130,10 @@ const DMAIL_TEMPLATES = [
         Please read [[help:community_rules]] before you leave further comments.
         `
     },
+]
+
+
+const DMAIL_TEMPLATES_NOTES = [
     {
         name: "Bad translations",
         title: "About your translations",
@@ -136,6 +152,9 @@ const DMAIL_TEMPLATES = [
         Please familiarize yourself with [[howto:translate]]. You should not translate posts unless you are reasonably familiar with both the original language and English.
         `
     },
+]
+
+const DMAIL_TEMPLATES_MISC = [
     {
         name: "Bad flags",
         title: "About your flags",
@@ -148,6 +167,45 @@ const DMAIL_TEMPLATES = [
     },
 ]
 
+
+function parse_example_entry(raw) {
+    raw = raw.trim();
+    if (!raw) return null;
+
+    let url;
+    try {
+        if (/^https?:\/\//i.test(raw)) {
+            url = new URL(raw);
+        }
+    } catch {
+        return raw
+    }
+
+    if (!url) { return raw }
+
+    const path = url.pathname;
+
+    const post = path.match(/^\/posts\/(\d+)/);
+    if (post) return `post #${post[1]}`;
+
+    const comment = path.match(/^\/comments\/(\d+)/);
+    if (comment) return `comment #${comment[1]}`;
+
+    const wiki = path.match(/^\/wiki_pages\/(.+)/);
+    if (wiki) return `[[${decodeURIComponent(wiki[1])}]]`;
+
+    const artist = path.match(/^\/artists\/(.+)/);
+    if (artist) return `[[${decodeURIComponent(artist[1])}]]`;
+
+    // Anything else (version pages, etc.) — keep the original URL
+    return raw;
+}
+
+function build_example_list(input_value) {
+    const entries = input_value.split("\n").map(e => e.trim()).filter(Boolean);
+    return entries.map(parse_example_entry).filter(Boolean).map(e => `* ${e} `);
+}
+
 function draw_button() {
     const subnavMenu = document.querySelector("#subnav-menu");
 
@@ -157,37 +215,85 @@ function draw_button() {
     document.querySelector("#dmail-templates").addEventListener("click", draw_modal);
 }
 
+const tabs = [
+    { id: "posts-tab",    label: "Posts",    templates: DMAIL_TEMPLATES_POSTS },
+    { id: "comments-tab", label: "Comments", templates: DMAIL_TEMPLATES_COMMENTS },
+    { id: "notes-tab",    label: "Notes",    templates: DMAIL_TEMPLATES_NOTES },
+    { id: "misc-tab",     label: "Misc",     templates: DMAIL_TEMPLATES_MISC },
+];
 
+function build_tab_html(tabs) {
+    const tabLinks = tabs.map((tab, i) => `
+        <a class="tab"
+           x-on:click.prevent="active = ${i}"
+           x-bind:class="{ 'active-tab': active === ${i} }"
+           href="#">${tab.label}</a>
+    `).join("");
+
+    const tabPanels = tabs.map((tab, i) => `
+        <div id="${tab.id}"
+             x-show="active === ${i}">
+        </div>
+    `).join("");
+
+    return `
+        <div class="tab-panel-component horizontal-tab-panel fixed-width-container" x-data="{ active: 0 }">
+            <h2>Dmail Templates</h2>
+            <div class="tab-list thin-x-scrollbar">${tabLinks}</div>
+            <div class="tab-panels">${tabPanels}</div>
+        </div>
+    `;
+}
 
 function draw_modal() {
+    const existing = document.querySelector("#dmail-modal");
+    if (existing) {
+        existing.style.display = existing.style.display === "none" ? "flex" : "none";
+        return;
+    }
+
     const modal = document.createElement("div");
     modal.id = "dmail-modal";
-    modal.style.position = "fixed";
-    modal.style.top = "50%";
-    modal.style.right = "50px";
-    modal.style.transform = "translateY(-50%)"; // Center vertically
-    modal.style.backgroundColor = "var(--subnav-menu-background-color)";
-    modal.style.display = "flex";
-    modal.style.justifyContent = "flex-end";
-    modal.style.alignItems = "center";
-    modal.style.zIndex = "1000";
-    modal.style.padding = "20px";
 
-    const modalContent = document.createElement("div");
-    modalContent.innerHTML = "<h2>Dmail Templates</h2>";
-
-    modalContent.innerHTML += "<h3>Example posts:</h3><input id='dmail-template-example-posts' placeholder='Post IDs, space-separated'></input>"
-
-    DMAIL_TEMPLATES.forEach((option, _index) => {
-        const button = document.createElement("button");
-        button.textContent = option.name;
-        button.style.display = "block";
-        button.style.margin = "10px 0";
-        button.addEventListener("click", () => fill_dmail(option.title, option.message));
-        modalContent.appendChild(button);
+    Object.assign(modal.style, {
+        position: "fixed",
+        top: "150px",
+        right: "50px",
+        backgroundColor: "var(--subnav-menu-background-color)",
+        display: "flex",
+        justifyContent: "flex-end",
+        alignItems: "center",
+        zIndex: "1000",
+        padding: "20px",
     });
 
-    modal.appendChild(modalContent);
+    modal.innerHTML = build_tab_html(tabs);
+
+    const examplesLabel = document.createElement("label");
+    examplesLabel.textContent = "Examples (URLs or dtext, one per line):";
+    examplesLabel.style.cssText = "display: block; margin-bottom: 4px;";
+
+    const examplesInput = document.createElement("textarea");
+    examplesInput.id = "dmail-template-examples";
+    examplesInput.placeholder = "https://danbooru.donmai.us/posts/123\npost #456\n[[wiki_page]]";
+    examplesInput.rows = 4;
+    examplesInput.style.cssText = "width: 100%; box-sizing: border-box; margin-bottom: 12px; font-family: monospace; font-size: 12px;";
+
+    const tabComponent = modal.querySelector(".tab-panel-component");
+    tabComponent.insertBefore(examplesLabel, tabComponent.querySelector(".tab-list"));
+    tabComponent.insertBefore(examplesInput, tabComponent.querySelector(".tab-list"));
+
+    tabs.forEach(({ id, templates }) => {
+        const panel = modal.querySelector(`#${id}`);
+        templates.forEach((option) => {
+            const button = document.createElement("button");
+            button.textContent = option.name;
+            button.style.cssText = "display: block; margin: 10px 0;";
+            button.addEventListener("click", () => fill_dmail(option.title, option.message));
+            panel.appendChild(button);
+        });
+    });
+
     document.body.appendChild(modal);
 }
 
@@ -204,23 +310,17 @@ function fill_dmail(title, message) {
         message = message.replace(/%USER_POST_SEARCH%(.*?)%/,  "")
     }
 
-    const examplePosts = $("#dmail-template-example-posts").val().trim();
-    if (examplePosts) {
-        const postList = examplePosts
-            .split(/\s+/)
-            .map(post => `* post #${post} `);
-
-        if (postList.length > 1) {
-            message += `\n\nHere's a few examples: \n${postList.join("\n")}`;
-        } else {
-            message += `\n\nHere's an example: \n${postList}`;
-        }
+    const exampleList = build_example_list($("#dmail-template-examples").val());
+    if (exampleList.length > 1) {
+        message += `\n\nHere are a few examples: \n${exampleList.join("\n")}`;
+    } else if (exampleList.length === 1) {
+        message += `\n\nHere's an example: \n${exampleList[0]}`;
     }
 
     console.log("Updating dmail body.")
     $("#dmail_body").closest(".dtext-editor").get(0).editor.dtext = message + "\n\n"
     $("#dmail_body").focus()
-    }
+}
 
 (function () {
     "use strict"
