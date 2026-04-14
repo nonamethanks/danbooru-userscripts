@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DmailTemplates
 // @namespace    https://github.com/nonamethanks/danbooru-userscripts
-// @version      0.3.0
+// @version      0.3.1
 // @description  Provide pre-written DMail templates.
 // @source       https://github.com/nonamethanks/danbooru-userscripts
 // @author       nonamethanks
@@ -155,6 +155,26 @@ const DMAIL_TEMPLATES_NOTES = [
 ]
 
 const DMAIL_TEMPLATES_MISC = [
+    {
+        name: "Flagging for missing tags",
+        title: "About your flags",
+        message: `
+        You have recently flagged posts for not being tagged correctly.
+
+        Please familiarize yourself with [[howto:flag]] before you flag again. You should only flag posts that break our [[help:upload rules]] or don't meet our quality standards.
+        A post not being tagged properly is not a valid reason for a flag. Instead, properly tag the post yourself, and if you don't like the tag, blacklist it after.
+        `
+    },
+    {
+        name: "Flagging for offensive content",
+        title: "About your flags",
+        message: `
+        You have recently flagged posts for being offensive or containing objectionable content.
+
+        Please familiarize yourself with [[howto:flag]] before you flag again. You should only flag posts that break our [[help:upload rules]] or don't meet our quality standards.
+        Not personally liking the subject matter of a post is not a valid reason to flag it. Instead, blacklist the tag that you don't like, so that you won't see it again.
+        `
+    },
     {
         name: "Bad flags",
         title: "About your flags",
