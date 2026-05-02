@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DmailTemplates
 // @namespace    https://github.com/nonamethanks/danbooru-userscripts
-// @version      0.3.1
+// @version      0.3.2
 // @description  Provide pre-written DMail templates.
 // @source       https://github.com/nonamethanks/danbooru-userscripts
 // @author       nonamethanks
@@ -183,6 +183,17 @@ const DMAIL_TEMPLATES_MISC = [
 
         Please familiarize yourself with [[howto:flag]] before you flag again. You should only flag posts that break our [[help:upload rules]] or don't meet our quality standards.
         A post having objectionable content or not being tagged properly is not a valid reason for a flag. Instead, blacklist the tag you don't like, or properly tag the post yourself.
+        `
+    },
+    {
+        name: "Approval begging in DMs",
+        title: "About your DMails",
+        message: `
+        Please don't contact random approvers asking them to approve your posts unprompted.
+
+        Approvers have thousands of posts to sort through. If every user started begging individual approvers to approve their posts there'd be no end to it.
+        Furthermore, pending posts have three days to be approved by any of our dozens of approvers, and it takes only one of them to approve a post, and even if a post is not approved in that time, you can still appeal it afterwards.
+        Please familiarize yourself with [[about:mod queue]] and [[howto:appeal]]. You can ask in topic #7934 if your posts are frequently ending up deleted and you don't know why.
         `
     },
 ]
