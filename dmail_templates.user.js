@@ -193,7 +193,7 @@ const DMAIL_TEMPLATES_MISC = [
 
         Approvers have thousands of posts to sort through. If every user started begging individual approvers to approve their posts there'd be no end to it.
         Furthermore, pending posts have three days to be approved by any of our dozens of approvers, and it takes only one of them to approve a post, and even if a post is not approved in that time, you can still appeal it afterwards.
-        Please familiarize yourself with [[about:mod queue]] and [[howto:appeal]]. You can ask in topic #7934 if your posts are frequently ending up deleted and you don't know why.
+        Please familiarize yourself with [[help:mod queue]] and [[howto:appeal]]. You can ask in topic #7934 if your posts are frequently ending up deleted and you don't know why.
         `
     },
     {
