@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DmailTemplates
 // @namespace    https://github.com/nonamethanks/danbooru-userscripts
-// @version      0.3.3
+// @version      0.3.4
 // @description  Provide pre-written DMail templates.
 // @source       https://github.com/nonamethanks/danbooru-userscripts
 // @author       nonamethanks
